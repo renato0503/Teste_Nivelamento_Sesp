@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const CATS = ["A","B","C","D","E","F"];
 const TOT = { A:4, B:5, C:5, D:5, E:5, F:6 };
-const DTOT = { basico:11, intermediario:14, avancado:1 };
+const DTOT = { basico:13, intermediario:16, avancado:1 };
 const nivelFor = p => p>=85?"Avançado":p>=65?"Intermediário":p>=40?"Básico":"Iniciante";
 
 const raw = fs.readFileSync(path.join(__dirname,"codes.txt"),"utf8")
