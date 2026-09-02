@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nivelamento SESP · Dados, BI e IA</title>
+<meta name="description" content="Teste de nivelamento em análise de dados, BI e IA para servidores da área administrativa da SESP.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f5f0;
+    --plane: #efede5;
+    --surface: #ffffff;
+    --surface-2: #faf9f5;
+    --ink: #1a1c1e;
+    --ink-soft: #585b60;
+    --ink-mute: #8a8c8f;
+    --line: #e3e0d6;
+    --line-strong: #cfccc0;
+    --accent: #1b5566;
+    --accent-strong: #143f4c;
+    --accent-wash: #e8f0f1;
+    --good: #0ca30c;
+    --warn: #b9861a;
+    --bad: #c0392b;
+    --s1: #2a78d6;
+    --s2: #eb6834;
+    --s3: #1baf7a;
+    --s4: #eda100;
+    --s5: #e87ba4;
+    --s6: #008300;
+    --shadow: 0 1px 2px rgba(20,20,20,.06), 0 8px 24px -12px rgba(20,20,20,.18);
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #14161a; --plane: #0e1013; --surface: #1e2127; --surface-2: #23262d;
+      --ink: #f1f0ea; --ink-soft: #b7b9bd; --ink-mute: #83868b;
+      --line: #2c2f36; --line-strong: #3a3e46;
+      --accent: #4d9fb4; --accent-strong: #6bb6c9; --accent-wash: #1b2e33;
+      --good: #0ca30c; --warn: #d8a53a; --bad: #e26a5c;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #14161a; --plane: #0e1013; --surface: #1e2127; --surface-2: #23262d;
+    --ink: #f1f0ea; --ink-soft: #b7b9bd; --ink-mute: #83868b;
+    --line: #2c2f36; --line-strong: #3a3e46;
+    --accent: #4d9fb4; --accent-strong: #6bb6c9; --accent-wash: #1b2e33;
+    --good: #0ca30c; --warn: #d8a53a; --bad: #e26a5c;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px -12px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.55; -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; }
+  h1, h2, h3 { font-family: "Newsreader", Georgia, "Times New Roman", serif; font-weight: 600; line-height: 1.2; text-wrap: balance; margin: 0; }
+  p { margin: 0; }
+  a { color: var(--accent); }
+  button { font-family: inherit; }
+  .tnum { font-variant-numeric: tabular-nums; }
+
+  .topbar { position: sticky; top: 0; z-index: 40; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  .topbar-inner { max-width: 1140px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; }
+  .brand .mark { font-family: "Newsreader", serif; font-weight: 700; font-size: 1.15rem; color: var(--accent); }
+  .brand .sub { font-size: .78rem; color: var(--ink-mute); letter-spacing: .04em; text-transform: uppercase; }
+  .tabs { display: flex; gap: 4px; background: var(--plane); padding: 4px; border-radius: 999px; border: 1px solid var(--line); }
+  .tab { border: 0; background: transparent; color: var(--ink-soft); padding: 7px 15px; border-radius: 999px; font-size: .86rem; font-weight: 600; cursor: pointer; }
+  .tab[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+
+  main { max-width: 1140px; margin: 0 auto; padding: 32px 20px 80px; }
+  .col { max-width: 760px; margin: 0 auto; }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+  .eyebrow { font-size: .74rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+  .lede { color: var(--ink-soft); font-size: 1.02rem; }
+  .muted { color: var(--ink-mute); font-size: .85rem; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; margin-top: 16px; }
+  .field label { font-size: .85rem; font-weight: 600; color: var(--ink-soft); }
+  .field input { font: inherit; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--ink); }
+  .field input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent-strong); color: #fff; border: 0; padding: 12px 22px; border-radius: 9px; font-size: .95rem; font-weight: 600; cursor: pointer; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--accent); border: 1px solid var(--line-strong); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .progress-wrap { position: sticky; top: 61px; z-index: 30; background: var(--bg); padding: 12px 0 14px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+  .progress-row { display: flex; align-items: center; gap: 12px; font-size: .84rem; color: var(--ink-soft); font-weight: 600; }
+  .bar { height: 7px; border-radius: 999px; background: var(--line); overflow: hidden; flex: 1; }
+  .bar > i { display: block; height: 100%; background: var(--accent); transition: width .25s ease; }
+
+  .cat-head { display: flex; align-items: center; gap: 10px; margin: 30px 0 6px; }
+  .cat-dot { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .cat-head h3 { font-size: 1.18rem; }
+  .cat-head .n { margin-left: auto; font-size: .8rem; color: var(--ink-mute); font-weight: 600; }
+
+  .q { padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .q-stem { display: flex; gap: 10px; font-weight: 600; }
+  .q-stem .qi { color: var(--accent); font-variant-numeric: tabular-nums; flex: none; }
+  .q-tag { display: inline-block; margin: 8px 0 12px 28px; font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-mute); }
+  .opts { display: flex; flex-direction: column; gap: 8px; margin-left: 28px; }
+  .opt { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 9px; cursor: pointer; background: var(--surface); font-size: .93rem; }
+  .opt:hover { border-color: var(--accent); }
+  .opt input { margin-top: 3px; accent-color: var(--accent); flex: none; }
+  .opt.sel { border-color: var(--accent); background: var(--accent-wash); }
+
+  .submit-row { display: flex; align-items: center; gap: 16px; margin-top: 28px; flex-wrap: wrap; }
+
+  .score-hero { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .score-hero .big { font-size: 3rem; font-family: "Newsreader", serif; font-weight: 700; line-height: 1; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: .82rem; font-weight: 700; border: 1px solid var(--line-strong); }
+  .lvl-Avançado { background: color-mix(in srgb, var(--good) 15%, transparent); color: var(--good); border-color: transparent; }
+  .lvl-Intermediário { background: var(--accent-wash); color: var(--accent); border-color: transparent; }
+  .lvl-Básico { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); border-color: transparent; }
+  .lvl-Iniciante { background: color-mix(in srgb, var(--bad) 14%, transparent); color: var(--bad); border-color: transparent; }
+
+  .codebox { margin-top: 8px; width: 100%; font-family: ui-monospace, "Cascadia Code", monospace; font-size: .78rem; padding: 10px; border-radius: 8px; border: 1px dashed var(--line-strong); background: var(--surface-2); color: var(--ink-soft); resize: vertical; min-height: 64px; }
+
+  .dash-grid { display: grid; gap: 18px; grid-template-columns: repeat(12, 1fr); }
+  .dash-grid > * { grid-column: span 12; }
+  @media (min-width: 720px) {
+    .span-6 { grid-column: span 6; }
+    .span-4 { grid-column: span 4; }
+    .span-8 { grid-column: span 8; }
+  }
+  .tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  @media (min-width: 720px) { .tiles { grid-template-columns: repeat(4, 1fr); } }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; }
+  .tile .k { font-size: .74rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-mute); }
+  .tile .v { font-size: 1.9rem; font-weight: 700; margin-top: 4px; line-height: 1; }
+  .tile .v small { font-size: .9rem; color: var(--ink-soft); font-weight: 600; }
+
+  .chart-title { font-size: 1.02rem; font-family: "Newsreader", serif; font-weight: 600; }
+  .chart-sub { font-size: .8rem; color: var(--ink-mute); margin-top: 2px; margin-bottom: 14px; }
+
+  .hbars { display: flex; flex-direction: column; gap: 10px; }
+  .hbar-row { display: grid; grid-template-columns: 130px 1fr 46px; align-items: center; gap: 10px; font-size: .84rem; }
+  .hbar-row .lab { color: var(--ink-soft); font-weight: 600; text-align: right; }
+  .hbar-track { background: var(--plane); border-radius: 5px; height: 20px; overflow: hidden; }
+  .hbar-fill { height: 100%; border-radius: 5px; min-width: 2px; }
+  .hbar-row .val { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .qchart { display: flex; align-items: flex-end; gap: 3px; height: 180px; padding-top: 10px; overflow-x: auto; }
+  .qcol { flex: 1 1 0; min-width: 14px; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; cursor: default; }
+  .qcol .qbar { width: 100%; border-radius: 3px 3px 0 0; min-height: 2px; }
+  .qcol .qlab { font-size: .62rem; color: var(--ink-mute); font-variant-numeric: tabular-nums; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; font-size: .78rem; color: var(--ink-soft); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; }
+
+  table.resp { width: 100%; border-collapse: collapse; font-size: .84rem; }
+  table.resp th, table.resp td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+  table.resp th { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-mute); }
+  table.resp td.tnum { font-variant-numeric: tabular-nums; }
+  .table-scroll { overflow-x: auto; }
+
+  .tooltip { position: fixed; z-index: 90; pointer-events: none; opacity: 0; transition: opacity .12s; background: var(--ink); color: var(--bg); font-size: .76rem; padding: 6px 9px; border-radius: 6px; max-width: 240px; box-shadow: var(--shadow); white-space: pre-line; }
+  .empty { text-align: center; padding: 48px 20px; color: var(--ink-mute); }
+  .gate { display: flex; flex-direction: column; gap: 10px; max-width: 340px; }
+  .row-gap { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="mark">Nivelamento SESP</span>
+      <span class="sub">Área administrativa</span>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-test" aria-selected="true" onclick="go('test')">Responder o teste</button>
+      <button class="tab" role="tab" id="tab-dash" aria-selected="false" onclick="go('dash')">Painel de análise</button>
+    </div>
+  </div>
+</div>
+
+<main id="view"></main>
+<div class="tooltip" id="tip"></div>
+
+<script src="config.js"></script>
+<script>
+/* ============================ CONFIG ============================ */
+const cfg = Object.assign({ apiUrl: "", token: "", painelSenha: "sesp-dados" }, window.NIV_CONFIG || {});
+
+const CATS = {
+  A: { nome: "Fundamentos de Dados", cor: "var(--s1)" },
+  B: { nome: "Estatística", cor: "var(--s2)" },
+  C: { nome: "Planilhas", cor: "var(--s3)" },
+  D: { nome: "Visualização e Comunicação", cor: "var(--s4)" },
+  E: { nome: "Power BI e Ferramentas", cor: "var(--s5)" },
+  F: { nome: "IA Generativa e Prompts", cor: "var(--s6)" },
+};
+const DIF = { basico: "Básico", intermediario: "Intermediário", avancado: "Avançado" };
+
+const Q = [
+  ["A","basico","O ciclo de vida da análise de dados normalmente começa por qual etapa?",
+    ["Publicação do painel","Coleta e obtenção dos dados","Análise preditiva","Escolha das cores do gráfico"],1],
+  ["A","basico","Uma planilha com colunas bem definidas (nome, matrícula, lotação, data de admissão) é um exemplo de dado:",
+    ["Não estruturado","Estruturado","Sigiloso por natureza","Corrompido"],1],
+  ["A","basico","Qual destes é um exemplo de dado NÃO estruturado?",
+    ["Uma tabela de servidores no Excel","O texto livre de um e-mail ou um documento digitalizado em PDF","Uma base com CPF e lotação","Uma lista de presença em colunas"],1],
+  ["A","intermediario","Completude, consistência, atualidade e acurácia são dimensões de:",
+    ["Qualidade dos dados","Segurança física do arquivo","Compressão de arquivos","Design de slides"],0],
+
+  ["B","basico","Qual medida é mais afetada por um valor extremo (outlier)?",
+    ["A moda","A mediana","A média","O total de registros"],2],
+  ["B","basico","Nas idades 25, 27, 27, 30 e 120, qual é a moda?",
+    ["27","30","45,8","120"],0],
+  ["B","intermediario","O desvio padrão serve para medir:",
+    ["O valor mais frequente","A dispersão dos dados em torno da média","O valor central da distribuição","A soma dos valores"],1],
+  ["B","intermediario","O boxplot é especialmente útil para:",
+    ["Mostrar a evolução de um valor no tempo","Visualizar mediana, quartis e possíveis outliers","Exibir a proporção de um total","Comparar dois textos"],1],
+  ["B","intermediario","Duas variáveis apresentam correlação de -0,9. Isso indica:",
+    ["Que não há relação entre elas","Uma relação forte: quando uma aumenta, a outra tende a diminuir","Uma relação fraca e positiva","Que uma variável causa a outra"],1],
+
+  ["C","basico","A fórmula =SE(A2>=7;\"Apto\";\"Inapto\") retorna \"Apto\" quando:",
+    ["A2 estiver vazia","A2 for maior ou igual a 7","A2 contiver texto","A2 for menor que 7"],1],
+  ["C","basico","Qual função soma apenas os valores que atendem a um critério?",
+    ["SOMA","SOMASE","CONT.NÚM","MÁXIMO"],1],
+  ["C","intermediario","Na fórmula =B2*$E$1, ao copiar para as linhas de baixo, a referência $E$1:",
+    ["Passa a ser $E$2, $E$3 e assim por diante","Permanece fixa em E1 (referência absoluta)","Provoca erro de cálculo","É convertida em texto"],1],
+  ["C","intermediario","Para contar quantos servidores estão lotados no \"Gabinete\" em uma coluna de lotações, a função mais indicada é:",
+    ["SOMA","CONT.SE","ARRUMAR","HOJE"],1],
+  ["C","intermediario","A função PROCV (ou PROCX) é usada para:",
+    ["Somar um intervalo de células","Localizar um valor em uma tabela e retornar a informação correspondente","Criar um gráfico automaticamente","Remover linhas duplicadas"],1],
+
+  ["D","basico","Para comparar o orçamento executado por 8 unidades administrativas, o gráfico mais adequado é:",
+    ["Pizza","Linhas","Barras ou colunas","Dispersão"],2],
+  ["D","basico","O gráfico de linhas é o mais indicado para mostrar:",
+    ["A proporção de cada parte em um total","A evolução de um indicador ao longo do tempo","Categorias sem nenhuma ordem entre si","A correlação entre duas variáveis"],1],
+  ["D","intermediario","Uma boa prática ao usar gráfico de pizza é:",
+    ["Usar mais de dez fatias","Usar poucas categorias e evitá-lo quando as fatias têm tamanhos parecidos","Aplicar sempre efeito 3D","Remover todos os rótulos"],1],
+  ["D","intermediario","\"Storytelling com dados\" significa principalmente:",
+    ["Criar uma narrativa que os dados não sustentam","Organizar os dados em uma sequência clara que conduz o público a uma conclusão","Usar a maior quantidade possível de cores","Apresentar apenas as tabelas brutas"],1],
+  ["D","intermediario","Começar o eixo vertical de um gráfico de colunas em um valor diferente de zero pode:",
+    ["Não causar nenhum efeito na leitura","Exagerar visualmente as diferenças e induzir o leitor ao erro","Melhorar a leitura em todos os casos","Corrigir erros dos dados"],1],
+
+  ["E","basico","Uma vantagem do Power BI em relação à planilha para relatórios recorrentes é:",
+    ["Dispensar o uso de dados","Permitir atualização e reprocessamento automáticos do relatório","Impedir a criação de gráficos","Funcionar apenas sem internet"],1],
+  ["E","basico","No Power BI, a ferramenta usada para importar e transformar os dados antes de carregá-los é o:",
+    ["Power Query","DAX","Segmentação de dados","Indicador de cartão"],0],
+  ["E","intermediario","A linguagem DAX, no Power BI, é usada para:",
+    ["Criar medidas e colunas calculadas","Definir as cores do relatório","Conectar o computador à internet","Instalar o aplicativo"],0],
+  ["E","intermediario","No Power BI Service, um \"workspace\" (espaço de trabalho) serve para:",
+    ["Armazenar e compartilhar relatórios de forma colaborativa","Editar imagens","Fazer backup do sistema operacional","Escrever e-mails institucionais"],0],
+  ["E","avancado","Na etapa de ETL, \"limpar dados sujos\" inclui:",
+    ["Apagar a base inteira e começar de novo","Remover duplicatas, corrigir tipos de dados e tratar valores ausentes","Aumentar artificialmente o número de linhas","Trocar o tema visual do relatório"],1],
+
+  ["F","basico","Ferramentas como ChatGPT, Gemini e Copilot são exemplos de:",
+    ["Planilhas eletrônicas","Inteligência artificial generativa baseada em linguagem","Sistemas de banco de dados","Programas antivírus"],1],
+  ["F","basico","A \"alucinação\" de uma IA generativa ocorre quando ela:",
+    ["Fica mais lenta para responder","Apresenta uma informação incorreta com aparência de verdadeira","Se recusa a responder à pergunta","Precisa ser atualizada"],1],
+  ["F","intermediario","Um bom prompt para gerar a minuta de um ofício tende a incluir:",
+    ["Apenas a frase \"faça um ofício\"","Contexto, objetivo, público, tom e formato desejados","Somente emojis e abreviações","A senha de acesso ao sistema"],1],
+  ["F","intermediario","GPTs personalizados e o NotebookLM são úteis principalmente para:",
+    ["Responder com base em documentos e manuais que você fornece","Substituir o sistema de folha de pagamento","Editar vídeos em alta resolução","Realizar ligações telefônicas"],0],
+  ["F","intermediario","Para pesquisar um tema e obter respostas com indicação das fontes consultadas na web, a ferramenta mais adequada é:",
+    ["Um assistente de pesquisa com IA, como o Perplexity","A calculadora do sistema","Um editor de imagens","Um leitor de PDF"],0],
+  ["F","intermediario","Ao usar IA para redigir um documento com dados de servidores, a boa prática é:",
+    ["Inserir todos os dados pessoais e sigilosos sem restrição","Evitar inserir dados pessoais ou sigilosos e revisar o conteúdo antes de usar","Publicar a resposta gerada sem ler","Confiar integralmente nos números apresentados pela IA"],1],
+].map((r, i) => ({ id: "q" + (i + 1), n: i + 1, cat: r[0], dif: r[1], stem: r[2], opts: r[3], correct: r[4] }));
+
+const TOTAL = Q.length;
+const catCount = c => Q.filter(q => q.cat === c).length;
+const difCount = d => Q.filter(q => q.dif === d).length;
+function nivelFor(pct) {
+  if (pct >= 85) return "Avançado";
+  if (pct >= 65) return "Intermediário";
+  if (pct >= 40) return "Básico";
+  return "Iniciante";
+}
+
+/* ============================ STATE ============================ */
+let screen = "test", phase = "intro";
+let aluno = { nome: "", setor: "" };
+let answers = {};
+let lastResult = null;
+let painelOk = false;
+let pollTimer = null;
+const el = document.getElementById("view");
+const tip = document.getElementById("tip");
+
+try {
+  const d = JSON.parse(localStorage.getItem("nivsesp-draft") || "null");
+  if (d) { aluno = d.aluno || aluno; answers = d.answers || {}; }
+} catch (e) {}
+function saveDraft() { try { localStorage.setItem("nivsesp-draft", JSON.stringify({ aluno, answers })); } catch (e) {} }
+function getExtras() { try { return JSON.parse(localStorage.getItem("nivsesp-extra") || "[]"); } catch (e) { return []; } }
+function setExtras(a) { try { localStorage.setItem("nivsesp-extra", JSON.stringify(a)); } catch (e) {} }
+
+/* ============================ API (Google Apps Script) ============================ */
+async function apiSubmit(rec) {
+  if (!cfg.apiUrl) return false;
+  await fetch(cfg.apiUrl, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(rec),
+  });
+  return true;
+}
+async function apiFetch() {
+  if (!cfg.apiUrl) return null;
+  const sep = cfg.apiUrl.includes("?") ? "&" : "?";
+  const r = await fetch(cfg.apiUrl + sep + "token=" + encodeURIComponent(cfg.token));
+  const j = await r.json();
+  if (!j || j.ok === false) throw new Error(j && j.error || "erro");
+  return (j.respostas || []).map(v => ({
+    id: "api-" + v.t + "-" + (v.nome || ""),
+    nome: v.nome || "(sem nome)", setor: v.setor || "",
+    t: v.t || 0, ac: v.ac || 0, pct: v.pct || 0, nivel: v.nivel || nivelFor(v.pct || 0),
+    porCat: v.porCat || {}, porDif: v.porDif || {}, respostas: v.respostas || null, origem: "link",
+  }));
+}
+
+/* ============================ SCORING ============================ */
+function scoreOf(ans) {
+  const porCat = {}, porDif = {};
+  Object.keys(CATS).forEach(c => porCat[c] = { a: 0, t: catCount(c) });
+  Object.keys(DIF).forEach(d => porDif[d] = { a: 0, t: difCount(d) });
+  let ac = 0;
+  Q.forEach(q => { if (ans[q.id] === q.correct) { ac++; porCat[q.cat].a++; porDif[q.dif].a++; } });
+  const pct = Math.round((ac / TOTAL) * 100);
+  return { ac, total: TOTAL, pct, nivel: nivelFor(pct), porCat, porDif };
+}
+function encodeResult(r) {
+  const compact = {
+    n: r.nome, s: r.setor, t: r.t, ac: r.ac, pct: r.pct,
+    c: Object.fromEntries(Object.keys(CATS).map(k => [k, r.porCat[k].a])),
+    d: { b: r.porDif.basico.a, i: r.porDif.intermediario.a, a: r.porDif.avancado.a },
+  };
+  return btoa(encodeURIComponent(JSON.stringify(compact)));
+}
+function decodeResult(code) {
+  try {
+    const o = JSON.parse(decodeURIComponent(atob(code.trim())));
+    if (typeof o.pct !== "number" || !o.c) return null;
+    return {
+      id: "code-" + o.t + "-" + (o.n || ""), nome: o.n || "(sem nome)", setor: o.s || "",
+      t: o.t, ac: o.ac, pct: o.pct, nivel: nivelFor(o.pct),
+      porCat: Object.fromEntries(Object.keys(CATS).map(k => [k, { a: o.c[k] || 0, t: catCount(k) }])),
+      porDif: {
+        basico: { a: o.d.b || 0, t: difCount("basico") },
+        intermediario: { a: o.d.i || 0, t: difCount("intermediario") },
+        avancado: { a: o.d.a || 0, t: difCount("avancado") },
+      },
+      respostas: null, origem: "código",
+    };
+  } catch (e) { return null; }
+}
+
+/* ============================ ROUTER ============================ */
+function go(s) {
+  screen = s;
+  document.getElementById("tab-test").setAttribute("aria-selected", s === "test");
+  document.getElementById("tab-dash").setAttribute("aria-selected", s === "dash");
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  window.scrollTo(0, 0);
+  if (s === "test") renderTest();
+  else painelOk ? renderDash() : renderGate();
+}
+
+/* ============================ TEST: INTRO ============================ */
+function renderTest() {
+  if (phase === "quiz") return renderQuiz();
+  if (phase === "done") return renderDone();
+  el.innerHTML = `
+    <div class="col">
+      <p class="eyebrow">Teste de nivelamento</p>
+      <h1 style="font-size:2rem;margin:8px 0 14px">Análise de dados, BI e IA na prática administrativa</h1>
+      <p class="lede">
+        Este teste é destinado aos <strong>servidores e colaboradores da área administrativa da SESP</strong>
+        &mdash; setores de gestão, planejamento, finanças, pessoal e apoio &mdash; e <strong>não à atividade policial</strong>.
+        O objetivo é apenas <strong>diagnóstico</strong>: mapear o ponto de partida da turma nos temas da capacitação
+        (fundamentos de dados, estatística, planilhas, Power BI, visualização e IA generativa) para calibrar o ritmo das aulas.
+      </p>
+      <div class="card" style="margin-top:24px">
+        <h3 style="font-size:1.15rem">Antes de começar</h3>
+        <ul class="muted" style="margin:10px 0 0;padding-left:18px;line-height:1.7">
+          <li>São <strong>30 questões</strong> de múltipla escolha, com <strong>uma resposta correta</strong> cada.</li>
+          <li>Sem tempo cronometrado. Responda sozinho, sem consultar &mdash; o resultado não vale nota.</li>
+          <li>Ao final você verá seu desempenho por tema.</li>
+        </ul>
+        <div class="field">
+          <label for="nome">Nome completo</label>
+          <input id="nome" autocomplete="name" value="${esc(aluno.nome)}" placeholder="Como você assina institucionalmente">
+        </div>
+        <div class="field">
+          <label for="setor">Setor / lotação</label>
+          <input id="setor" value="${esc(aluno.setor)}" placeholder="Ex.: Diretoria de Gestão de Pessoas">
+        </div>
+        <div class="submit-row">
+          <button class="btn" onclick="startQuiz()">Começar o teste</button>
+          <span class="muted" id="introMsg"></span>
+        </div>
+      </div>
+    </div>`;
+}
+function startQuiz() {
+  const nome = document.getElementById("nome").value.trim();
+  const setor = document.getElementById("setor").value.trim();
+  if (!nome) { document.getElementById("introMsg").textContent = "Informe seu nome para continuar."; return; }
+  aluno = { nome, setor }; saveDraft(); phase = "quiz"; renderQuiz();
+}
+
+/* ============================ TEST: QUIZ ============================ */
+function renderQuiz() {
+  const groups = Object.keys(CATS).map(c => {
+    const qs = Q.filter(q => q.cat === c);
+    const rows = qs.map(q => {
+      const sel = answers[q.id];
+      const opts = q.opts.map((o, i) => `
+        <label class="opt ${sel === i ? "sel" : ""}" data-q="${q.id}" data-i="${i}">
+          <input type="radio" name="${q.id}" ${sel === i ? "checked" : ""}>
+          <span>${esc(o)}</span>
+        </label>`).join("");
+      return `
+        <div class="q" id="row-${q.id}">
+          <div class="q-stem"><span class="qi">${q.n}.</span><span>${esc(q.stem)}</span></div>
+          <div class="q-tag">${DIF[q.dif]}</div>
+          <div class="opts">${opts}</div>
+        </div>`;
+    }).join("");
+    return `
+      <div class="cat-head">
+        <span class="cat-dot" style="background:${CATS[c].cor}"></span>
+        <h3>${CATS[c].nome}</h3>
+        <span class="n">${qs.length} questões</span>
+      </div>${rows}`;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="col">
+      <div class="progress-wrap">
+        <div class="progress-row">
+          <span id="pcount">0/${TOTAL}</span>
+          <span class="bar"><i id="pfill" style="width:0%"></i></span>
+          <span class="muted" style="font-weight:600">${esc(aluno.nome)}</span>
+        </div>
+      </div>
+      ${groups}
+      <div class="submit-row">
+        <button class="btn" id="finishBtn" onclick="finishQuiz()" disabled>Enviar respostas</button>
+        <span class="muted" id="finishMsg"></span>
+      </div>
+    </div>`;
+
+  el.querySelectorAll(".opt").forEach(o => {
+    o.addEventListener("click", () => {
+      const q = o.dataset.q, i = +o.dataset.i;
+      answers[q] = i;
+      el.querySelectorAll('.opt[data-q="' + q + '"]').forEach(x => x.classList.toggle("sel", x === o));
+      o.querySelector("input").checked = true;
+      saveDraft(); updateProgress();
+    });
+  });
+  updateProgress();
+}
+function updateProgress() {
+  const done = Q.filter(q => answers[q.id] != null).length;
+  const f = document.getElementById("pfill"), c = document.getElementById("pcount");
+  if (f) f.style.width = (done / TOTAL * 100) + "%";
+  if (c) c.textContent = done + "/" + TOTAL;
+  const btn = document.getElementById("finishBtn");
+  if (btn) {
+    btn.disabled = done < TOTAL;
+    document.getElementById("finishMsg").textContent = done < TOTAL ? (TOTAL - done) + " questão(ões) sem resposta" : "";
+  }
+}
+async function finishQuiz() {
+  const done = Q.filter(q => answers[q.id] != null).length;
+  if (done < TOTAL) {
+    const first = Q.find(q => answers[q.id] == null);
+    document.getElementById("row-" + first.id).scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  const btn = document.getElementById("finishBtn");
+  btn.disabled = true; btn.textContent = "Enviando…";
+  const s = scoreOf(answers);
+  const rec = {
+    nome: aluno.nome, setor: aluno.setor, t: Date.now(),
+    ac: s.ac, total: s.total, pct: s.pct, nivel: s.nivel,
+    porCat: s.porCat, porDif: s.porDif, respostas: { ...answers },
+  };
+  lastResult = rec;
+  try { rec.salvo = await apiSubmit(rec); } catch (e) { rec.salvo = false; rec.erro = true; }
+  try { localStorage.removeItem("nivsesp-draft"); } catch (e) {}
+  phase = "done"; renderDone();
+}
+
+/* ============================ TEST: DONE ============================ */
+function renderDone() {
+  const r = lastResult;
+  if (!r) { phase = "intro"; return renderTest(); }
+  const code = encodeResult(r);
+  const catRows = Object.keys(CATS).map(c => {
+    const pc = r.porCat[c], p = Math.round(pc.a / pc.t * 100);
+    return hbarRow(CATS[c].nome, p, CATS[c].cor, pc.a + "/" + pc.t);
+  }).join("");
+
+  let statusHtml, showCode;
+  if (cfg.apiUrl && r.salvo && !r.erro) {
+    statusHtml = `<p class="muted">✓ Resposta enviada. Você já pode fechar esta página.</p>`;
+    showCode = false;
+  } else if (cfg.apiUrl) {
+    statusHtml = `<p class="muted" style="color:var(--warn)">Não foi possível enviar automaticamente (rede/navegador). Copie o código abaixo e envie ao instrutor.</p>`;
+    showCode = true;
+  } else {
+    statusHtml = `<p class="muted">Copie o código abaixo e envie ao instrutor para consolidação da turma.</p>`;
+    showCode = true;
+  }
+
+  el.innerHTML = `
+    <div class="col">
+      <p class="eyebrow">Resultado</p>
+      <div class="card" style="margin-top:10px">
+        <div class="score-hero">
+          <span class="big tnum">${r.pct}%</span>
+          <span class="pill lvl-${r.nivel}">Nível ${r.nivel}</span>
+          <span class="muted tnum">${r.ac} de ${r.total} corretas</span>
+        </div>
+        <p class="chart-sub" style="margin-top:14px">Desempenho por tema</p>
+        <div class="hbars">${catRows}</div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h3 style="font-size:1.05rem">${showCode ? "Código de registro" : "Tudo certo"}</h3>
+        ${statusHtml}
+        ${showCode ? `<textarea class="codebox" readonly onclick="this.select()">${code}</textarea>
+        <div class="row-gap" style="margin-top:12px">
+          <button class="btn ghost" onclick="copyCode(this,'${code}')">Copiar código</button>
+          <button class="btn ghost" onclick="restart()">Novo preenchimento</button>
+        </div>` : `<div class="row-gap" style="margin-top:8px"><button class="btn ghost" onclick="restart()">Novo preenchimento</button></div>`}
+      </div>
+      <p class="muted" style="margin-top:18px;text-align:center">
+        Este é um diagnóstico inicial: os temas com menor acerto serão reforçados ao longo da capacitação.
+      </p>
+    </div>`;
+}
+function copyCode(btn, code) {
+  navigator.clipboard && navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = "Copiado ✓"; setTimeout(() => btn.textContent = "Copiar código", 1600);
+  });
+}
+function restart() {
+  answers = {}; lastResult = null; phase = "intro";
+  try { localStorage.removeItem("nivsesp-draft"); } catch (e) {}
+  renderTest();
+}
+
+/* ============================ DASHBOARD GATE ============================ */
+function renderGate() {
+  el.innerHTML = `
+    <div class="col">
+      <p class="eyebrow">Painel de análise</p>
+      <h1 style="font-size:1.7rem;margin:8px 0 12px">Acesso do instrutor</h1>
+      <p class="lede">Consolidação das respostas da turma &mdash; distribuição de níveis, desempenho por tema e por questão.</p>
+      <div class="card" style="margin-top:22px">
+        <div class="gate">
+          <label class="field" style="margin:0">
+            <span style="font-size:.85rem;font-weight:600;color:var(--ink-soft)">Senha do painel</span>
+            <input id="pw" type="password" placeholder="senha combinada com a coordenação">
+          </label>
+          <button class="btn" onclick="tryGate()">Entrar</button>
+          <span class="muted" id="gateMsg"></span>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById("pw").addEventListener("keydown", e => { if (e.key === "Enter") tryGate(); });
+}
+function tryGate() {
+  if (document.getElementById("pw").value.trim().toLowerCase() === String(cfg.painelSenha).toLowerCase()) {
+    painelOk = true; renderDash();
+  } else {
+    document.getElementById("gateMsg").textContent = "Senha incorreta.";
+  }
+}
+
+/* ============================ DASHBOARD ============================ */
+let dashApiRecs = [];
+function renderDash() {
+  const extras = getExtras().map(decodeResult).filter(Boolean);
+  drawDash([...dashApiRecs, ...extras], { loading: !!cfg.apiUrl && !dashApiRecs._loaded });
+  if (cfg.apiUrl) {
+    refreshApi();
+    if (!pollTimer) pollTimer = setInterval(refreshApi, 25000);
+  }
+}
+async function refreshApi() {
+  if (!cfg.apiUrl || screen !== "dash") return;
+  try {
+    const recs = await apiFetch();
+    dashApiRecs = recs || [];
+    dashApiRecs._loaded = true;
+    const extras = getExtras().map(decodeResult).filter(Boolean);
+    drawDash([...dashApiRecs, ...extras], {});
+  } catch (e) {
+    const extras = getExtras().map(decodeResult).filter(Boolean);
+    drawDash([...dashApiRecs, ...extras], { apiError: String(e.message || e) });
+  }
+}
+
+function drawDash(recs, opt) {
+  opt = opt || {};
+  recs = recs.filter((r, i, arr) => arr.findIndex(x => x.id === r.id) === i).sort((a, b) => b.t - a.t);
+  const n = recs.length;
+
+  const src = cfg.apiUrl
+    ? (opt.apiError ? '<span style="color:var(--bad)">erro ao ler o painel: ' + esc(opt.apiError) + '</span>' : "sincronizado pelo link")
+    : "modo local (sem servidor) — apenas códigos colados";
+
+  const controls = `
+    <div class="card" style="margin-bottom:18px">
+      <div class="row-gap" style="justify-content:space-between">
+        <div>
+          <span class="chart-title">Painel de análise da turma</span>
+          <div class="chart-sub" style="margin:2px 0 0">${n} resposta(s) &middot; ${src}</div>
+        </div>
+        <div class="row-gap">
+          ${cfg.apiUrl ? '<button class="btn ghost" onclick="refreshApi()">Atualizar</button>' : ''}
+          <button class="btn ghost" onclick="exportCsv()">Exportar CSV</button>
+          <button class="btn ghost" onclick="togglePaste()">Colar códigos</button>
+        </div>
+      </div>
+      <div id="pasteArea" hidden style="margin-top:12px">
+        <p class="muted">Cole um código por linha (recebidos de alunos que não conseguiram enviar pelo link) e clique em adicionar.</p>
+        <textarea class="codebox" id="pasteBox" placeholder="cód1&#10;cód2&#10;…"></textarea>
+        <div class="row-gap" style="margin-top:8px">
+          <button class="btn ghost" onclick="addPasted()">Adicionar ao painel</button>
+          <button class="btn ghost" onclick="clearPasted()">Limpar colados</button>
+          <span class="muted" id="pasteMsg"></span>
+        </div>
+      </div>
+    </div>`;
+
+  if (!n) {
+    el.innerHTML = controls + `<div class="empty">${opt.loading ? "Carregando respostas…" : "Nenhuma resposta ainda. Compartilhe o link do teste ou adicione códigos manualmente."}</div>`;
+    bindTips(); return;
+  }
+
+  const pcts = recs.map(r => r.pct).sort((a, b) => a - b);
+  const media = Math.round(pcts.reduce((s, x) => s + x, 0) / n);
+  const mediana = pcts.length % 2 ? pcts[(pcts.length - 1) / 2]
+    : Math.round((pcts[pcts.length / 2 - 1] + pcts[pcts.length / 2]) / 2);
+  const niveis = ["Iniciante", "Básico", "Intermediário", "Avançado"];
+  const nivelCount = Object.fromEntries(niveis.map(x => [x, recs.filter(r => r.nivel === x).length]));
+  const nivelPredom = niveis.reduce((a, b) => nivelCount[b] >= nivelCount[a] ? b : a, niveis[0]);
+
+  const tiles = `
+    <div class="tiles">
+      ${tile("Respondentes", n)}
+      ${tile("Média da turma", media + '<small>%</small>')}
+      ${tile("Mediana", mediana + '<small>%</small>')}
+      ${tile("Nível predominante", '<span style="font-size:1.15rem">' + nivelPredom + '</span>')}
+    </div>`;
+
+  const nivelCores = { Iniciante: "var(--bad)", "Básico": "var(--warn)", "Intermediário": "var(--accent)", "Avançado": "var(--good)" };
+  const nivelChart = card("span-6", "Distribuição por nível", "Onde a turma está hoje",
+    `<div class="hbars">${niveis.map(x =>
+      hbarRow(x, n ? Math.round(nivelCount[x] / n * 100) : 0, nivelCores[x], String(nivelCount[x]))
+    ).join("")}</div>`);
+
+  const catData = Object.keys(CATS).map(c => {
+    const tot = recs.reduce((s, r) => s + ((r.porCat[c] && r.porCat[c].t) || catCount(c)), 0);
+    const acc = recs.reduce((s, r) => s + ((r.porCat[c] && r.porCat[c].a) || 0), 0);
+    return { nome: CATS[c].nome, cor: CATS[c].cor, pct: tot ? Math.round(acc / tot * 100) : 0 };
+  });
+  const catChart = card("span-6", "Acerto médio por tema", "Módulos com menor acerto entram como prioridade",
+    `<div class="hbars">${catData.map(d => hbarRow(d.nome, d.pct, d.cor, d.pct + "%")).join("")}</div>`);
+
+  const difData = Object.keys(DIF).map(d => {
+    const tot = recs.reduce((s, r) => s + ((r.porDif[d] && r.porDif[d].t) || difCount(d)), 0);
+    const acc = recs.reduce((s, r) => s + ((r.porDif[d] && r.porDif[d].a) || 0), 0);
+    return { nome: DIF[d], pct: tot ? Math.round(acc / tot * 100) : 0 };
+  });
+  const difChart = card("span-4", "Acerto por nível de dificuldade", "Questões básicas / intermediárias / avançadas",
+    `<div class="hbars">${difData.map(d => hbarRow(d.nome, d.pct, "var(--accent)", d.pct + "%")).join("")}</div>`);
+
+  const full = recs.filter(r => r.respostas && Object.keys(r.respostas).length);
+  let qChart;
+  if (full.length) {
+    const cols = Q.map(q => {
+      const acc = full.filter(r => r.respostas[q.id] === q.correct).length;
+      const p = Math.round(acc / full.length * 100);
+      return `<div class="qcol" data-tip="Q${q.n} · ${CATS[q.cat].nome}\n${p}% de acerto (${acc}/${full.length})">
+        <div class="qbar" style="height:${Math.max(p, 1)}%;background:${CATS[q.cat].cor}"></div>
+        <div class="qlab">${q.n}</div></div>`;
+    }).join("");
+    const leg = Object.keys(CATS).map(c => `<span><i style="background:${CATS[c].cor}"></i>${CATS[c].nome}</span>`).join("");
+    qChart = card("span-8", "Taxa de acerto por questão", `Base: ${full.length} resposta(s) com detalhe · cor = tema`,
+      `<div class="qchart">${cols}</div><div class="legend">${leg}</div>`);
+  } else {
+    qChart = card("span-8", "Taxa de acerto por questão", "Disponível quando houver respostas enviadas pelo link",
+      `<div class="empty" style="padding:28px">Os códigos colados trazem o total por tema, mas não o detalhe questão a questão.</div>`);
+  }
+
+  const rows = recs.map(r => `
+    <tr>
+      <td>${esc(r.nome)}</td>
+      <td>${esc(r.setor || "—")}</td>
+      <td class="tnum">${r.pct}%</td>
+      <td><span class="pill lvl-${r.nivel}" style="font-size:.72rem">${r.nivel}</span></td>
+      ${Object.keys(CATS).map(c => {
+        const v = r.porCat[c] && typeof r.porCat[c].a === "number" ? r.porCat[c].a : "–";
+        return `<td class="tnum">${v}/${catCount(c)}</td>`;
+      }).join("")}
+      <td class="muted" style="white-space:nowrap">${r.t ? new Date(r.t).toLocaleDateString("pt-BR") : ""}</td>
+    </tr>`).join("");
+  const table = card("span-12", "Respondentes", "Acertos por tema (A–F) em cada linha",
+    `<div class="table-scroll"><table class="resp">
+      <thead><tr><th>Nome</th><th>Setor</th><th>%</th><th>Nível</th>
+      ${Object.keys(CATS).map(c => `<th title="${CATS[c].nome}">${c}</th>`).join("")}<th>Data</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>`);
+
+  el.innerHTML = controls + tiles + `<div class="dash-grid" style="margin-top:18px">
+    ${nivelChart}${catChart}${qChart}${difChart}${table}</div>`;
+  bindTips();
+  window._csv = recs;
+}
+
+/* ============================ DASH HELPERS ============================ */
+function tile(k, v) { return `<div class="tile"><div class="k">${k}</div><div class="v tnum">${v}</div></div>`; }
+function card(span, title, sub, body) {
+  return `<section class="card ${span}"><div class="chart-title">${title}</div><div class="chart-sub">${sub}</div>${body}</section>`;
+}
+function hbarRow(label, pct, color, val) {
+  return `<div class="hbar-row">
+    <span class="lab">${label}</span>
+    <span class="hbar-track"><span class="hbar-fill" style="width:${Math.max(pct, 0)}%;background:${color}"></span></span>
+    <span class="val tnum">${val}</span>
+  </div>`;
+}
+function bindTips() {
+  el.querySelectorAll("[data-tip]").forEach(node => {
+    node.addEventListener("mouseenter", () => { tip.textContent = node.dataset.tip; tip.style.opacity = "1"; });
+    node.addEventListener("mousemove", e => {
+      tip.style.left = Math.min(e.clientX + 12, innerWidth - 240) + "px";
+      tip.style.top = (e.clientY + 14) + "px";
+    });
+    node.addEventListener("mouseleave", () => tip.style.opacity = "0");
+  });
+}
+function togglePaste() { const a = document.getElementById("pasteArea"); if (a) a.hidden = !a.hidden; }
+function addPasted() {
+  const raw = document.getElementById("pasteBox").value.split(/\s+/).filter(Boolean);
+  const cur = getExtras();
+  let ok = 0;
+  raw.forEach(code => { if (decodeResult(code)) { cur.push(code); ok++; } });
+  setExtras(cur);
+  const m = document.getElementById("pasteMsg"); if (m) m.textContent = ok + " código(s) adicionado(s).";
+  const extras = getExtras().map(decodeResult).filter(Boolean);
+  drawDash([...dashApiRecs, ...extras], {});
+}
+function clearPasted() {
+  setExtras([]);
+  drawDash([...dashApiRecs], {});
+}
+
+function csvText(recs) {
+  const head = ["nome", "setor", "percentual", "nivel", "acertos", ...Object.keys(CATS).map(c => "tema_" + c), "data"];
+  const lines = recs.map(r => [
+    r.nome, r.setor, r.pct, r.nivel, r.ac,
+    ...Object.keys(CATS).map(c => (r.porCat[c] && typeof r.porCat[c].a === "number") ? r.porCat[c].a : ""),
+    r.t ? new Date(r.t).toISOString() : "",
+  ].map(v => '"' + String(v).replace(/"/g, '""') + '"').join(","));
+  return head.join(",") + "\n" + lines.join("\n");
+}
+function exportCsv() {
+  const recs = window._csv || [];
+  const blob = new Blob(["﻿" + csvText(recs)], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "nivelamento-sesp.csv";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+/* ============================ UTIL ============================ */
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m])); }
+
+/* ============================ BOOT ============================ */
+renderTest();
+</script>
+</body>
+</html>
