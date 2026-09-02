@@ -460,6 +460,57 @@ window.NIV_SEED = [
   "origem": "código"
  },
  {
+  "id": "code-1788360169602-LÍDIA PEREIRA FA SILVA",
+  "nome": "LÍDIA PEREIRA FA SILVA",
+  "setor": "GERENCIA DE APLICAÇÃO E AVALIAÇÃO DE DESEMPENHO",
+  "t": 1788360169602,
+  "ac": 27,
+  "pct": 90,
+  "nivel": "Avançado",
+  "porCat": {
+   "A": {
+    "a": 2,
+    "t": 4
+   },
+   "B": {
+    "a": 5,
+    "t": 5
+   },
+   "C": {
+    "a": 5,
+    "t": 5
+   },
+   "D": {
+    "a": 5,
+    "t": 5
+   },
+   "E": {
+    "a": 4,
+    "t": 5
+   },
+   "F": {
+    "a": 6,
+    "t": 6
+   }
+  },
+  "porDif": {
+   "basico": {
+    "a": 10,
+    "t": 11
+   },
+   "intermediario": {
+    "a": 16,
+    "t": 14
+   },
+   "avancado": {
+    "a": 1,
+    "t": 1
+   }
+  },
+  "respostas": null,
+  "origem": "código"
+ },
+ {
   "id": "code-1788360190573-Fabiane de Sousa Melo",
   "nome": "Fabiane de Sousa Melo",
   "setor": "SAI/SESP",
@@ -766,6 +817,57 @@ window.NIV_SEED = [
   "origem": "código"
  },
  {
+  "id": "code-1788360292234-RGINALDO APARECIDO LOPES",
+  "nome": "RGINALDO APARECIDO LOPES",
+  "setor": "SESP-GEFRON",
+  "t": 1788360292234,
+  "ac": 19,
+  "pct": 63,
+  "nivel": "Básico",
+  "porCat": {
+   "A": {
+    "a": 3,
+    "t": 4
+   },
+   "B": {
+    "a": 2,
+    "t": 5
+   },
+   "C": {
+    "a": 3,
+    "t": 5
+   },
+   "D": {
+    "a": 2,
+    "t": 5
+   },
+   "E": {
+    "a": 3,
+    "t": 5
+   },
+   "F": {
+    "a": 6,
+    "t": 6
+   }
+  },
+  "porDif": {
+   "basico": {
+    "a": 7,
+    "t": 11
+   },
+   "intermediario": {
+    "a": 12,
+    "t": 14
+   },
+   "avancado": {
+    "a": 0,
+    "t": 1
+   }
+  },
+  "respostas": null,
+  "origem": "código"
+ },
+ {
   "id": "code-1788360314422-Cleyton Dias",
   "nome": "Cleyton Dias",
   "setor": "Gabinete do Secretário Adjunto de Segurança Pública",
@@ -959,6 +1061,159 @@ window.NIV_SEED = [
    },
    "intermediario": {
     "a": 12,
+    "t": 14
+   },
+   "avancado": {
+    "a": 1,
+    "t": 1
+   }
+  },
+  "respostas": null,
+  "origem": "código"
+ },
+ {
+  "id": "code-1788360412569-Ueliton Peres de Oliveira",
+  "nome": "Ueliton Peres de Oliveira",
+  "setor": "Gestão de Pessoas da SESP",
+  "t": 1788360412569,
+  "ac": 22,
+  "pct": 73,
+  "nivel": "Intermediário",
+  "porCat": {
+   "A": {
+    "a": 4,
+    "t": 4
+   },
+   "B": {
+    "a": 4,
+    "t": 5
+   },
+   "C": {
+    "a": 2,
+    "t": 5
+   },
+   "D": {
+    "a": 2,
+    "t": 5
+   },
+   "E": {
+    "a": 4,
+    "t": 5
+   },
+   "F": {
+    "a": 6,
+    "t": 6
+   }
+  },
+  "porDif": {
+   "basico": {
+    "a": 10,
+    "t": 11
+   },
+   "intermediario": {
+    "a": 11,
+    "t": 14
+   },
+   "avancado": {
+    "a": 1,
+    "t": 1
+   }
+  },
+  "respostas": null,
+  "origem": "código"
+ },
+ {
+  "id": "code-1788360440549-Leticia ferretti lobo",
+  "nome": "Leticia ferretti lobo",
+  "setor": "Núcleo de Gestão  Estratégica para Resultados",
+  "t": 1788360440549,
+  "ac": 24,
+  "pct": 80,
+  "nivel": "Intermediário",
+  "porCat": {
+   "A": {
+    "a": 3,
+    "t": 4
+   },
+   "B": {
+    "a": 2,
+    "t": 5
+   },
+   "C": {
+    "a": 5,
+    "t": 5
+   },
+   "D": {
+    "a": 4,
+    "t": 5
+   },
+   "E": {
+    "a": 4,
+    "t": 5
+   },
+   "F": {
+    "a": 6,
+    "t": 6
+   }
+  },
+  "porDif": {
+   "basico": {
+    "a": 10,
+    "t": 11
+   },
+   "intermediario": {
+    "a": 13,
+    "t": 14
+   },
+   "avancado": {
+    "a": 1,
+    "t": 1
+   }
+  },
+  "respostas": null,
+  "origem": "código"
+ },
+ {
+  "id": "code-1788360516994-Juliane Bertila da Silva",
+  "nome": "Juliane Bertila da Silva",
+  "setor": "SUGP",
+  "t": 1788360516994,
+  "ac": 21,
+  "pct": 70,
+  "nivel": "Intermediário",
+  "porCat": {
+   "A": {
+    "a": 4,
+    "t": 4
+   },
+   "B": {
+    "a": 1,
+    "t": 5
+   },
+   "C": {
+    "a": 5,
+    "t": 5
+   },
+   "D": {
+    "a": 3,
+    "t": 5
+   },
+   "E": {
+    "a": 3,
+    "t": 5
+   },
+   "F": {
+    "a": 5,
+    "t": 6
+   }
+  },
+  "porDif": {
+   "basico": {
+    "a": 9,
+    "t": 11
+   },
+   "intermediario": {
+    "a": 11,
     "t": 14
    },
    "avancado": {

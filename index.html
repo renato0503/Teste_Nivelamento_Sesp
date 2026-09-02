@@ -120,6 +120,13 @@
 
   .submit-row { display: flex; align-items: center; gap: 16px; margin-top: 28px; flex-wrap: wrap; }
 
+  .gab-opt { display: flex; gap: 10px; align-items: baseline; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: .92rem; margin-left: 28px; }
+  .gab-opt + .gab-opt { margin-top: 6px; }
+  .gab-opt .gab-key { color: var(--ink-mute); font-weight: 700; flex: none; }
+  .gab-opt.ok { border-color: transparent; background: color-mix(in srgb, var(--good) 14%, transparent); }
+  .gab-opt.ok span { color: var(--ink); }
+  .gab-check { margin-left: auto; font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--good); flex: none; }
+
   .score-hero { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
   .score-hero .big { font-size: 3rem; font-family: "Newsreader", serif; font-weight: 700; line-height: 1; }
   .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: .82rem; font-weight: 700; border: 1px solid var(--line-strong); }
@@ -187,6 +194,7 @@
     <div class="tabs" role="tablist">
       <button class="tab" role="tab" id="tab-test" aria-selected="true" onclick="go('test')">Responder o teste</button>
       <button class="tab" role="tab" id="tab-dash" aria-selected="false" onclick="go('dash')">Painel de análise</button>
+      <button class="tab" role="tab" id="tab-gab" aria-selected="false" onclick="go('gab')">Gabarito</button>
     </div>
   </div>
 </div>
@@ -369,12 +377,14 @@ function decodeResult(code) {
 /* ============================ ROUTER ============================ */
 function go(s) {
   screen = s;
-  document.getElementById("tab-test").setAttribute("aria-selected", s === "test");
-  document.getElementById("tab-dash").setAttribute("aria-selected", s === "dash");
+  ["test", "dash", "gab"].forEach(t =>
+    document.getElementById("tab-" + t).setAttribute("aria-selected", s === t));
   if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
   window.scrollTo(0, 0);
   if (s === "test") renderTest();
-  else painelOk ? renderDash() : renderGate();
+  else if (!painelOk) renderGate();
+  else if (s === "gab") renderGab();
+  else renderDash();
 }
 
 /* ============================ TEST: INTRO ============================ */
@@ -586,10 +596,50 @@ function renderGate() {
 }
 function tryGate() {
   if (document.getElementById("pw").value.trim().toLowerCase() === String(cfg.painelSenha).toLowerCase()) {
-    painelOk = true; renderDash();
+    painelOk = true; screen === "gab" ? renderGab() : renderDash();
   } else {
     document.getElementById("gateMsg").textContent = "Senha incorreta.";
   }
+}
+
+/* ============================ GABARITO ============================ */
+function renderGab() {
+  const recs = baseRecs();
+  const groups = Object.keys(CATS).map(c => {
+    const qs = Q.filter(q => q.cat === c);
+    const tot = recs.reduce((s, r) => s + ((r.porCat[c] && r.porCat[c].t) || catCount(c)), 0);
+    const acc = recs.reduce((s, r) => s + ((r.porCat[c] && r.porCat[c].a) || 0), 0);
+    const catPct = tot ? Math.round(acc / tot * 100) : null;
+    const rows = qs.map(q => {
+      const opts = q.opts.map((o, i) => `
+        <div class="gab-opt ${i === q.correct ? "ok" : ""}">
+          <span class="gab-key">${String.fromCharCode(97 + i)})</span>
+          <span>${esc(o)}</span>
+          ${i === q.correct ? '<span class="gab-check">✓ correta</span>' : ""}
+        </div>`).join("");
+      return `
+        <div class="q">
+          <div class="q-stem"><span class="qi">${q.n}.</span><span>${esc(q.stem)}</span></div>
+          <div class="q-tag">${DIF[q.dif]}</div>
+          <div class="opts">${opts}</div>
+        </div>`;
+    }).join("");
+    return `
+      <div class="cat-head">
+        <span class="cat-dot" style="background:${CATS[c].cor}"></span>
+        <h3>${CATS[c].nome}</h3>
+        <span class="n">${catPct == null ? qs.length + " questões" : "acerto da turma: " + catPct + "%"}</span>
+      </div>${rows}`;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="col">
+      <p class="eyebrow">Gabarito</p>
+      <h1 style="font-size:1.7rem;margin:8px 0 10px">Respostas corretas das 30 questões</h1>
+      <p class="lede">Uso interno da coordenação. A alternativa correta está marcada em verde.
+      O percentual por tema vem do consolidado da turma (${recs.length} resposta(s)).</p>
+      ${groups}
+    </div>`;
 }
 
 /* ============================ DASHBOARD ============================ */
@@ -712,9 +762,10 @@ function drawDash(recs, opt) {
       `<div class="empty" style="padding:28px">Os códigos colados trazem o total por tema, mas não o detalhe questão a questão.</div>`);
   }
 
-  const rows = recs.map(r => `
+  const rowsOrdered = recs.slice().sort((a, b) => a.t - b.t);
+  const rows = rowsOrdered.map((r, idx) => `
     <tr>
-      <td>${esc(r.nome)}</td>
+      <td class="muted tnum">#${String(idx + 1).padStart(2, "0")}</td>
       <td>${esc(r.setor || "—")}</td>
       <td class="tnum">${r.pct}%</td>
       <td><span class="pill lvl-${r.nivel}" style="font-size:.72rem">${r.nivel}</span></td>
@@ -724,9 +775,9 @@ function drawDash(recs, opt) {
       }).join("")}
       <td class="muted" style="white-space:nowrap">${r.t ? new Date(r.t).toLocaleDateString("pt-BR") : ""}</td>
     </tr>`).join("");
-  const table = card("span-12", "Respondentes", "Acertos por tema (A–F) em cada linha",
+  const table = card("span-12", "Respondentes (anônimo)", "Sem identificação nominal · acertos por tema (A–F) em cada linha",
     `<div class="table-scroll"><table class="resp">
-      <thead><tr><th>Nome</th><th>Setor</th><th>%</th><th>Nível</th>
+      <thead><tr><th>#</th><th>Setor</th><th>%</th><th>Nível</th>
       ${Object.keys(CATS).map(c => `<th title="${CATS[c].nome}">${c}</th>`).join("")}<th>Data</th></tr></thead>
       <tbody>${rows}</tbody></table></div>`);
 
