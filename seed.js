@@ -1123,6 +1123,57 @@ window.NIV_SEED = [
   "origem": "código"
  },
  {
+  "id": "code-1788360425215-Gislene Santos Oliveira de Abreu",
+  "nome": "Gislene Santos Oliveira de Abreu",
+  "setor": "SUTRAN - Superintendência de Transporte",
+  "t": 1788360425215,
+  "ac": 20,
+  "pct": 67,
+  "nivel": "Intermediário",
+  "porCat": {
+   "A": {
+    "a": 3,
+    "t": 4
+   },
+   "B": {
+    "a": 2,
+    "t": 5
+   },
+   "C": {
+    "a": 2,
+    "t": 5
+   },
+   "D": {
+    "a": 3,
+    "t": 5
+   },
+   "E": {
+    "a": 4,
+    "t": 5
+   },
+   "F": {
+    "a": 6,
+    "t": 6
+   }
+  },
+  "porDif": {
+   "basico": {
+    "a": 9,
+    "t": 13
+   },
+   "intermediario": {
+    "a": 10,
+    "t": 16
+   },
+   "avancado": {
+    "a": 1,
+    "t": 1
+   }
+  },
+  "respostas": null,
+  "origem": "código"
+ },
+ {
   "id": "code-1788360440549-Leticia ferretti lobo",
   "nome": "Leticia ferretti lobo",
   "setor": "Núcleo de Gestão  Estratégica para Resultados",
