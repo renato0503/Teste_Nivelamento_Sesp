@@ -195,6 +195,7 @@
 <div class="tooltip" id="tip"></div>
 
 <script src="config.js"></script>
+<script src="seed.js"></script>
 <script>
 /* ============================ CONFIG ============================ */
 const cfg = Object.assign({ apiUrl: "", token: "", painelSenha: "sesp-dados" }, window.NIV_CONFIG || {});
@@ -593,9 +594,13 @@ function tryGate() {
 
 /* ============================ DASHBOARD ============================ */
 let dashApiRecs = [];
-function renderDash() {
+const seedRecs = Array.isArray(window.NIV_SEED) ? window.NIV_SEED : [];
+function baseRecs() {
   const extras = getExtras().map(decodeResult).filter(Boolean);
-  drawDash([...dashApiRecs, ...extras], { loading: !!cfg.apiUrl && !dashApiRecs._loaded });
+  return [...dashApiRecs, ...seedRecs, ...extras];
+}
+function renderDash() {
+  drawDash(baseRecs(), { loading: !!cfg.apiUrl && !dashApiRecs._loaded });
   if (cfg.apiUrl) {
     refreshApi();
     if (!pollTimer) pollTimer = setInterval(refreshApi, 25000);
@@ -607,11 +612,9 @@ async function refreshApi() {
     const recs = await apiFetch();
     dashApiRecs = recs || [];
     dashApiRecs._loaded = true;
-    const extras = getExtras().map(decodeResult).filter(Boolean);
-    drawDash([...dashApiRecs, ...extras], {});
+    drawDash(baseRecs(), {});
   } catch (e) {
-    const extras = getExtras().map(decodeResult).filter(Boolean);
-    drawDash([...dashApiRecs, ...extras], { apiError: String(e.message || e) });
+    drawDash(baseRecs(), { apiError: String(e.message || e) });
   }
 }
 
@@ -622,7 +625,7 @@ function drawDash(recs, opt) {
 
   const src = cfg.apiUrl
     ? (opt.apiError ? '<span style="color:var(--bad)">erro ao ler o painel: ' + esc(opt.apiError) + '</span>' : "sincronizado pelo link")
-    : "modo local (sem servidor) — apenas códigos colados";
+    : "consolidado dos códigos recebidos (atualizado pelo instrutor)";
 
   const controls = `
     <div class="card" style="margin-bottom:18px">
@@ -763,12 +766,11 @@ function addPasted() {
   raw.forEach(code => { if (decodeResult(code)) { cur.push(code); ok++; } });
   setExtras(cur);
   const m = document.getElementById("pasteMsg"); if (m) m.textContent = ok + " código(s) adicionado(s).";
-  const extras = getExtras().map(decodeResult).filter(Boolean);
-  drawDash([...dashApiRecs, ...extras], {});
+  drawDash(baseRecs(), {});
 }
 function clearPasted() {
   setExtras([]);
-  drawDash([...dashApiRecs], {});
+  drawDash(baseRecs(), {});
 }
 
 function csvText(recs) {
