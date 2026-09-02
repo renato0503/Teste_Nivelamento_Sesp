@@ -209,12 +209,12 @@
 const cfg = Object.assign({ apiUrl: "", token: "", painelSenha: "sesp-dados" }, window.NIV_CONFIG || {});
 
 const CATS = {
-  A: { nome: "Fundamentos de Dados", cor: "var(--s1)" },
-  B: { nome: "Estatística", cor: "var(--s2)" },
-  C: { nome: "Planilhas", cor: "var(--s3)" },
-  D: { nome: "Visualização e Comunicação", cor: "var(--s4)" },
-  E: { nome: "Power BI e Ferramentas", cor: "var(--s5)" },
-  F: { nome: "IA Generativa e Prompts", cor: "var(--s6)" },
+  A: { nome: "Fundamentos de Dados", cor: "#2a78d6" },
+  B: { nome: "Estatística", cor: "#eb6834" },
+  C: { nome: "Planilhas", cor: "#1baf7a" },
+  D: { nome: "Visualização e Comunicação", cor: "#eda100" },
+  E: { nome: "Power BI e Ferramentas", cor: "#e87ba4" },
+  F: { nome: "IA Generativa e Prompts", cor: "#008300" },
 };
 const DIF = { basico: "Básico", intermediario: "Intermediário", avancado: "Avançado" };
 
@@ -722,19 +722,29 @@ function drawDash(recs, opt) {
       ${tile("Nível predominante", '<span style="font-size:1.15rem">' + nivelPredom + '</span>')}
     </div>`;
 
-  const nivelCores = { Iniciante: "var(--bad)", "Básico": "var(--warn)", "Intermediário": "var(--accent)", "Avançado": "var(--good)" };
+  const nivelCores = { Iniciante: "#c0392b", "Básico": "#e08a1e", "Intermediário": "#2a78d6", "Avançado": "#0ca30c" };
   const nivelChart = card("span-6", "Distribuição por nível", "Onde a turma está hoje",
     `<div class="hbars">${niveis.map(x =>
-      hbarRow(x, n ? Math.round(nivelCount[x] / n * 100) : 0, nivelCores[x], String(nivelCount[x]))
+      hbarRow(x, n ? Math.round(nivelCount[x] / n * 100) : 0, nivelCores[x], nivelCount[x] + " (" + (n ? Math.round(nivelCount[x] / n * 100) : 0) + "%)", nivelCores[x])
     ).join("")}</div>`);
 
   const catData = Object.keys(CATS).map(c => {
     const tot = recs.reduce((s, r) => s + ((r.porCat[c] && r.porCat[c].t) || catCount(c)), 0);
     const acc = recs.reduce((s, r) => s + ((r.porCat[c] && r.porCat[c].a) || 0), 0);
     return { nome: CATS[c].nome, cor: CATS[c].cor, pct: tot ? Math.round(acc / tot * 100) : 0 };
-  });
-  const catChart = card("span-6", "Acerto médio por tema", "Módulos com menor acerto entram como prioridade",
-    `<div class="hbars">${catData.map(d => hbarRow(d.nome, d.pct, d.cor, d.pct + "%")).join("")}</div>`);
+  }).sort((a, b) => a.pct - b.pct);
+  const prio = p => p < 60 ? ["#c0392b", "prioridade"] : p < 75 ? ["#e08a1e", "atenção"] : ["#0ca30c", "ok"];
+  const catChart = card("span-6", "Acerto médio por tema", "Ordenado do menor para o maior — os de cima entram como prioridade",
+    `<div class="hbars">${catData.map(d => {
+      const [pc, pl] = prio(d.pct);
+      return `<div class="hbar-row" style="grid-template-columns:150px 1fr auto">
+        <span class="lab">${d.nome}</span>
+        <span class="hbar-track"><span class="hbar-fill" style="width:${d.pct}%;background:${d.cor}"></span></span>
+        <span class="val" style="color:${d.cor};display:flex;gap:8px;align-items:center">${d.pct}%
+          <span style="font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:${pc};padding:2px 7px;border-radius:999px">${pl}</span>
+        </span>
+      </div>`;
+    }).join("")}</div>`);
 
   const difData = Object.keys(DIF).map(d => {
     const tot = recs.reduce((s, r) => s + ((r.porDif[d] && r.porDif[d].t) || difCount(d)), 0);
@@ -742,7 +752,7 @@ function drawDash(recs, opt) {
     return { nome: DIF[d], pct: tot ? Math.round(acc / tot * 100) : 0 };
   });
   const difChart = card("span-4", "Acerto por nível de dificuldade", "Questões básicas / intermediárias / avançadas",
-    `<div class="hbars">${difData.map(d => hbarRow(d.nome, d.pct, "var(--accent)", d.pct + "%")).join("")}</div>`);
+    `<div class="hbars">${difData.map((d, i) => hbarRow(d.nome, d.pct, ["#6aa9e0", "#2a78d6", "#143f4c"][i] || "#2a78d6", d.pct + "%")).join("")}</div>`);
 
   const full = recs.filter(r => r.respostas && Object.keys(r.respostas).length);
   let qChart;
@@ -792,11 +802,11 @@ function tile(k, v) { return `<div class="tile"><div class="k">${k}</div><div cl
 function card(span, title, sub, body) {
   return `<section class="card ${span}"><div class="chart-title">${title}</div><div class="chart-sub">${sub}</div>${body}</section>`;
 }
-function hbarRow(label, pct, color, val) {
+function hbarRow(label, pct, color, val, valColor) {
   return `<div class="hbar-row">
     <span class="lab">${label}</span>
     <span class="hbar-track"><span class="hbar-fill" style="width:${Math.max(pct, 0)}%;background:${color}"></span></span>
-    <span class="val tnum">${val}</span>
+    <span class="val tnum" style="${valColor ? "color:" + valColor : ""}">${val}</span>
   </div>`;
 }
 function bindTips() {
