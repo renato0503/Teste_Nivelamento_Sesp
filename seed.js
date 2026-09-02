@@ -1274,5 +1274,56 @@ window.NIV_SEED = [
   },
   "respostas": null,
   "origem": "código"
+ },
+ {
+  "id": "code-1788360615280-Rosiney Teixeira de Carvalho Almeida",
+  "nome": "Rosiney Teixeira de Carvalho Almeida",
+  "setor": "Gerencia de Tarifas",
+  "t": 1788360615280,
+  "ac": 27,
+  "pct": 90,
+  "nivel": "Avançado",
+  "porCat": {
+   "A": {
+    "a": 4,
+    "t": 4
+   },
+   "B": {
+    "a": 4,
+    "t": 5
+   },
+   "C": {
+    "a": 4,
+    "t": 5
+   },
+   "D": {
+    "a": 5,
+    "t": 5
+   },
+   "E": {
+    "a": 4,
+    "t": 5
+   },
+   "F": {
+    "a": 6,
+    "t": 6
+   }
+  },
+  "porDif": {
+   "basico": {
+    "a": 12,
+    "t": 13
+   },
+   "intermediario": {
+    "a": 14,
+    "t": 16
+   },
+   "avancado": {
+    "a": 1,
+    "t": 1
+   }
+  },
+  "respostas": null,
+  "origem": "código"
  }
 ];
